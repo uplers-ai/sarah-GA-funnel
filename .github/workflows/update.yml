@@ -1,0 +1,60 @@
+name: Daily GA4 refresh
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # 04:00 UTC = 09:30 IST, daily
+  workflow_dispatch:        # lets you run it on demand from the Actions tab
+
+permissions:
+  contents: write   # commit the refreshed data.json
+  pages: write      # publish to GitHub Pages
+  id-token: write   # required by deploy-pages
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  refresh-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write service-account key
+        run: printf '%s' "$GA4_SA_KEY" > "$RUNNER_TEMP/key.json"
+        env:
+          GA4_SA_KEY: ${{ secrets.GA4_SA_KEY }}
+
+      - name: Fetch GA4 data
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/key.json
+          GA4_PROPERTY_ID: "285344907"
+          GA4_WINDOW: "mtd"
+        run: python fetch_ga4.py
+
+      - name: Commit refreshed data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          git commit -m "Daily GA4 refresh $(date -u +%F)" || echo "no changes to commit"
+          git push || echo "nothing to push"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sarah Funnel — Tracking Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFFFFF;
+    --border: #E3E6EA;
+    --border-strong: #C9CED6;
+    --head-bg: #F5F6F8;
+    --text: #14161A;
+    --text-muted: #6B7280;
+    --text-dim: #9CA3AF;
+    --blue: #2563EB;   --blue-bg: #EFF6FF;
+    --violet: #7C3AED; --violet-bg: #F5F3FF;
+    --green: #16A34A;  --green-bg: #F0FDF4;
+    --red: #DC2626;    --red-bg: #FEF2F2;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    padding: 28px 20px 60px;
+    font-size: 13.5px;
+  }
+  .wrap{ max-width: 820px; margin: 0 auto; }
+
+  header{ display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom: 14px; }
+  h1{ font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  header p{ color: var(--text-muted); font-size: 12.5px; }
+
+  .toolbar{ display:flex; align-items:center; gap: 12px; margin-bottom: 14px; flex-wrap:wrap; }
+  .status-line{ font-size: 11.5px; color: var(--text-dim); display:flex; align-items:center; gap:6px; }
+  .dot{ width:6px; height:6px; border-radius:50%; background: var(--text-dim); }
+  .dot.live{ background: var(--green); }
+  .window-pill{
+    font-size: 11px; font-weight:600; color: var(--text-muted);
+    background: var(--head-bg); border:1px solid var(--border);
+    padding: 3px 9px; border-radius: 20px;
+  }
+
+  h2.section{
+    font-size: 12px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    color: var(--text-dim); margin: 26px 0 8px;
+  }
+
+  table{ width: 100%; border-collapse: collapse; }
+  .table-note{ text-align:left; font-size:11px; color:var(--text-dim); margin: 4px 0 0; }
+  th, td{ border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: middle; }
+  thead th{
+    background: var(--head-bg); font-size: 10.5px; font-weight: 700;
+    letter-spacing: 0.03em; text-transform: uppercase; color: var(--text-muted);
+  }
+  td.num{ text-align:right; font-variant-numeric: tabular-nums; font-weight: 600; white-space:nowrap; }
+  td.pct{ text-align:right; font-variant-numeric: tabular-nums; color: var(--text-muted); white-space:nowrap; }
+  td.stage{ font-weight: 700; font-size: 12.5px; }
+  tr.seg-india td:not(.stage){ background: var(--blue-bg); }
+  tr.seg-outside td:not(.stage){ background: var(--violet-bg); }
+  tr.seg-jobseeker td:not(.stage){ background: var(--red-bg); }
+  tr.seg-genuine td:not(.stage){ background: var(--green-bg); }
+  .sw{ display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px; }
+
+  ul.readout{ list-style:none; margin:0; padding:0; }
+  ul.readout li{ margin-bottom: 4px; font-size:12.5px; line-height:1.5; }
+  ul.readout li:before{ content:"–"; margin-right:6px; color: var(--text-dim); }
+  td.readout-cell{ vertical-align: top; }
+  .empty-hint{ color: var(--text-dim); font-size: 12px; }
+
+  .backlog{ width:100%; border-collapse: collapse; }
+  .backlog td{ border: 1px solid var(--border); padding: 7px 10px; font-size: 12.5px; vertical-align: top; }
+  .backlog td.n{ width: 22px; text-align:center; font-weight:700; color: var(--text-dim); }
+  .backlog td b{ font-weight:700; }
+  .backlog td span{ color: var(--text-muted); }
+
+  footer.note{ margin-top: 34px; padding-top: 14px; border-top: 1px solid var(--border);
+    font-size: 11.5px; color: var(--text-dim); line-height: 1.6; }
+  footer.note code{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Sarah — Funnel Tracking Sheet</h1>
+    <p>Homepage → geo split → CTA click → job seeker / genuine buyer</p>
+  </header>
+
+  <div class="toolbar">
+    <span class="window-pill" id="windowPill">reporting window —</span>
+    <div class="status-line"><span class="dot" id="statusDot"></span><span id="statusText">loading…</span></div>
+  </div>
+
+  <h2 class="section">Funnel</h2>
+  <table>
+    <thead>
+      <tr><th>Stage</th><th>Segment</th><th style="text-align:right">Count</th><th style="text-align:right">Share</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="stage">1 · Homepage traffic</td><td>All traffic</td>
+        <td class="num" id="c-home">—</td><td class="pct" id="s-home">—</td>
+      </tr>
+      <tr class="seg-india">
+        <td class="stage" rowspan="2">2 · Geo split</td>
+        <td><span class="sw" style="background:var(--blue)"></span>India</td>
+        <td class="num" id="c-india">—</td><td class="pct" id="s-india">—</td>
+      </tr>
+      <tr class="seg-outside">
+        <td><span class="sw" style="background:var(--violet)"></span>Outside India</td>
+        <td class="num" id="c-outside">—</td><td class="pct" id="s-outside">—</td>
+      </tr>
+      <tr class="seg-india">
+        <td class="stage" rowspan="2">3 · Started with Sarah</td>
+        <td><span class="sw" style="background:var(--blue)"></span>India</td>
+        <td class="num" id="c-sarah-india">—</td><td class="pct" id="s-sarah-india">—</td>
+      </tr>
+      <tr class="seg-outside">
+        <td><span class="sw" style="background:var(--violet)"></span>Outside India</td>
+        <td class="num" id="c-sarah-outside">—</td><td class="pct" id="s-sarah-outside">—</td>
+      </tr>
+      <tr>
+        <td class="stage">4 · Total tried</td><td>All conversations</td>
+        <td class="num" id="c-total">—</td><td class="pct" id="s-total">—</td>
+      </tr>
+      <tr class="seg-jobseeker">
+        <td class="stage" rowspan="2">5 · Lead quality</td>
+        <td><span class="sw" style="background:var(--red)"></span>Job seekers</td>
+        <td class="num" id="c-jobseekers">—</td><td class="pct" id="s-jobseekers">—</td>
+      </tr>
+      <tr class="seg-genuine">
+        <td><span class="sw" style="background:var(--green)"></span>Genuine buyers</td>
+        <td class="num" id="c-genuine">—</td><td class="pct" id="s-genuine">—</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="table-note">Rows 1–4 update automatically from GA4 each day. Share for rows 2, 3, 5 is % within that stage; row 4 share is % of homepage traffic (overall conversion). Row 5 (lead quality) is entered manually.</div>
+
+  <h2 class="section">Analysis</h2>
+  <table>
+    <thead>
+      <tr>
+        <th style="width:33%; background:var(--green-bg)">What's good</th>
+        <th style="width:33%; background:var(--red-bg)">What's bad</th>
+        <th style="background:var(--blue-bg)">What's next</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="readout-cell"><ul class="readout" id="out-good"></ul></td>
+        <td class="readout-cell"><ul class="readout" id="out-bad"></ul></td>
+        <td class="readout-cell"><ul class="readout" id="out-next"></ul></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 class="section">Other areas to track (not wired yet)</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Question</th><th>Metrics</th></tr></thead>
+    <tbody>
+      <tr><td class="stage">3 · Conversation quality</td><td>Did the chat go well?</td><td>Completion rate, drop-off point, avg duration/turns, identity capture rate</td></tr>
+      <tr><td class="stage">4 · Conversion / outcome</td><td>Did it lead anywhere?</td><td>Demo booked, CRM handoff, sales-qualified rate</td></tr>
+      <tr><td class="stage">5 · Experience quality</td><td>Was it a good experience?</td><td>Sentiment flags, voice/technical failures, complaints</td></tr>
+      <tr><td class="stage">6 · Retention</td><td>Do they come back?</td><td>Repeat use, referrals</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="section">Improvement backlog (pointers only)</h2>
+  <table class="backlog">
+    <tr><td class="n">1</td><td><b>Make it voice-first</b> — <span>reduces friction, matches the "agent" positioning</span></td></tr>
+    <tr><td class="n">2</td><td><b>Add LinkedIn-first gating</b> — <span>pre-qualify via professional identity so only buyers reach Sarah</span></td></tr>
+    <tr><td class="n">3</td><td><b>Add Sarah to all pages, not just homepage</b> — <span>more surface area; traffic tracking needs to follow</span></td></tr>
+    <tr><td class="n">4</td><td><b>Add geo-tagging within Sarah itself</b> — <span>self-sourced India/Outside signal instead of GA4's IP-based guess</span></td></tr>
+  </table>
+
+  <footer class="note">
+    GA4 funnel rows (1–4) refresh automatically every day. To change the lead-quality numbers or the analysis notes, edit <code>manual.json</code> in the repository (GitHub → <code>manual.json</code> → pencil icon → commit) — the daily job never overwrites it.
+  </footer>
+
+</div>
+
+<script>
+function fmtNum(n){ return (n===null||n===undefined||isNaN(n)) ? '—' : Math.round(n).toLocaleString(); }
+function fmtPct(n, decimals){ return (n===null||n===undefined||isNaN(n)||!isFinite(n)) ? '—' : n.toFixed(decimals!==undefined?decimals:0)+'%'; }
+
+function computeDerived(raw){
+  const d = {...raw};
+  const home = raw.homepageSessions || 0;
+  const india = raw.indiaSessions || 0;
+  const outside = home - india;
+  const sarahIndia = raw.sarahIndiaClicks || 0;
+  const sarahOutside = raw.sarahOutsideClicks || 0;
+  const totalTried = sarahIndia + sarahOutside;
+  const jobSeekers = raw.jobSeekerCount || 0;
+  const genuine = totalTried - jobSeekers;
+
+  d.outsideSessions = outside;
+  d.indiaPct = home>0 ? (india/home*100) : NaN;
+  d.outsidePct = home>0 ? (outside/home*100) : NaN;
+  d.ctrIndia = india>0 ? (sarahIndia/india*100) : NaN;
+  d.ctrOutside = outside>0 ? (sarahOutside/outside*100) : NaN;
+  d.totalTried = totalTried;
+  d.totalShare = home>0 ? (totalTried/home*100) : NaN;
+  d.genuineCount = genuine;
+  d.jobSeekerPct = totalTried>0 ? (jobSeekers/totalTried*100) : NaN;
+  d.genuinePct = totalTried>0 ? (genuine/totalTried*100) : NaN;
+  return d;
+}
+
+function renderList(id, text){
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  const lines = (text||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  if(lines.length===0){ el.innerHTML = '<li class="empty-hint">Nothing added yet</li>'; return; }
+  lines.forEach(l => { const li=document.createElement('li'); li.textContent=l; el.appendChild(li); });
+}
+
+function applyData(raw){
+  const d = computeDerived(raw);
+  document.getElementById('c-home').textContent = fmtNum(raw.homepageSessions);
+  document.getElementById('s-home').textContent = raw.homepageSessions ? '100%' : '—';
+  document.getElementById('c-india').textContent = fmtNum(raw.indiaSessions);
+  document.getElementById('s-india').textContent = fmtPct(d.indiaPct);
+  document.getElementById('c-outside').textContent = fmtNum(d.outsideSessions);
+  document.getElementById('s-outside').textContent = fmtPct(d.outsidePct);
+  document.getElementById('c-sarah-india').textContent = fmtNum(raw.sarahIndiaClicks);
+  document.getElementById('s-sarah-india').textContent = fmtPct(d.ctrIndia,1)+(isFinite(d.ctrIndia)?' CTR':'');
+  document.getElementById('c-sarah-outside').textContent = fmtNum(raw.sarahOutsideClicks);
+  document.getElementById('s-sarah-outside').textContent = fmtPct(d.ctrOutside,1)+(isFinite(d.ctrOutside)?' CTR':'');
+  document.getElementById('c-total').textContent = fmtNum(d.totalTried);
+  document.getElementById('s-total').textContent = fmtPct(d.totalShare,1);
+  document.getElementById('c-jobseekers').textContent = fmtNum(raw.jobSeekerCount);
+  document.getElementById('s-jobseekers').textContent = fmtPct(d.jobSeekerPct);
+  document.getElementById('c-genuine').textContent = fmtNum(d.genuineCount);
+  document.getElementById('s-genuine').textContent = fmtPct(d.genuinePct);
+
+  renderList('out-good', raw.goodText);
+  renderList('out-bad', raw.badText);
+  renderList('out-next', raw.nextText);
+
+  if(raw.windowLabel){ document.getElementById('windowPill').textContent = 'reporting window · ' + raw.windowLabel; }
+
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  if(raw.homepageSessions){
+    dot.classList.add('live');
+    const when = raw.updatedAt ? new Date(raw.updatedAt).toLocaleString() : 'unknown time';
+    txt.textContent = 'Live — GA4 last updated ' + when;
+  } else {
+    dot.classList.remove('live');
+    txt.textContent = 'No data yet';
+  }
+}
+
+async function loadData(){
+  const bust = '?t=' + Date.now();
+  let ga4 = {}, manual = {};
+  try{ const r = await fetch('data.json' + bust); if(r.ok) ga4 = await r.json(); }catch(e){}
+  try{ const r = await fetch('manual.json' + bust); if(r.ok) manual = await r.json(); }catch(e){}
+  applyData({...manual, ...ga4});
+}
+
+loadData();
+</script>
+</body>
+</html>
