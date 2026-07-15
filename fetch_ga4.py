@@ -34,9 +34,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(HERE, "data.json")
 
 # ---- reporting window ------------------------------------------------------
+# Priority: GA4_START (a fixed launch date) > GA4_WINDOW ("mtd" or N days).
 today = datetime.date.today()
+start_env = os.environ.get("GA4_START")            # e.g. "2026-07-08" (Sarah launch day)
 window = os.environ.get("GA4_WINDOW", "mtd")
-if window == "mtd":
+if start_env:
+    start = datetime.date.fromisoformat(start_env)
+    window_label = f"{start.strftime('%b %-d')} – {today.strftime('%-d, %Y')} (since launch)"
+elif window == "mtd":
     start = today.replace(day=1)
     window_label = f"{start.strftime('%b %-d')} – {today.strftime('%-d, %Y')} (month to date)"
 else:

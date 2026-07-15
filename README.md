@@ -61,8 +61,10 @@ on-demand refreshes.
 
 ## Reporting window
 
-Month-to-date by default (`GA4_WINDOW: "mtd"` in the workflow). For a rolling window,
-set `GA4_WINDOW` to a number of days, e.g. `"28"`.
+Anchored to Sarah's launch day: `GA4_START: "2026-07-08"` in the workflow reports from
+that date through today ("since launch"). Change the date to move the start, or remove
+`GA4_START` and set `GA4_WINDOW` to `"mtd"` (month-to-date) or a number of days (e.g.
+`"28"`) for a rolling window instead.
 
 ## Updating the manual numbers
 

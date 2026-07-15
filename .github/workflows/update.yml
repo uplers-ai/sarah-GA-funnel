@@ -39,7 +39,7 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/key.json
           GA4_PROPERTY_ID: "285344907"
-          GA4_WINDOW: "mtd"
+          GA4_START: "2026-07-08"   # Sarah launch day; reports from here to today
         run: python fetch_ga4.py
 
       - name: Commit refreshed data.json
