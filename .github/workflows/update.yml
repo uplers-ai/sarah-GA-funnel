@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0 4 * * *"   # 04:00 UTC = 09:30 IST, daily
   workflow_dispatch:        # lets you run it on demand from the Actions tab
+  push:
+    branches: [ main ]      # also refresh + redeploy on any commit (e.g. editing manual.json)
 
 permissions:
   contents: write   # commit the refreshed data.json
