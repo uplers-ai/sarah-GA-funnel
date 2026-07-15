@@ -90,6 +90,15 @@ india_filter = FilterExpression(
 r = run([], ["sessions"], india_filter)
 india = int(r.rows[0].metric_values[0].value) if r.rows else 0
 
+# 2b. USA homepage sessions (a subset of "outside India")
+usa_filter = FilterExpression(
+    and_group=FilterExpressionList(
+        expressions=[eq("landingPagePlusQueryString", "/"), eq("country", "United States")]
+    )
+)
+r = run([], ["sessions"], usa_filter)
+usa = int(r.rows[0].metric_values[0].value) if r.rows else 0
+
 # 3. "Start with Sarah" CTA clicks, split India vs outside
 r = run(["country"], ["eventCount"], eq("eventName", EVENT_NAME))
 sarah_total = 0
@@ -105,6 +114,7 @@ sarah_outside = sarah_total - sarah_india
 data = {
     "homepageSessions": homepage,
     "indiaSessions": india,
+    "usaSessions": usa,
     "sarahIndiaClicks": sarah_india,
     "sarahOutsideClicks": sarah_outside,
     "windowLabel": window_label,

@@ -19,6 +19,7 @@
     --violet: #7C3AED; --violet-bg: #F5F3FF;
     --green: #16A34A;  --green-bg: #F0FDF4;
     --red: #DC2626;    --red-bg: #FEF2F2;
+    --amber: #D97706;  --amber-bg: #FFFBEB;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
@@ -63,6 +64,7 @@
     margin-top:3px; text-transform:none; letter-spacing:0; }
   tr.seg-india td:not(.stage){ background: var(--blue-bg); }
   tr.seg-outside td:not(.stage){ background: var(--violet-bg); }
+  tr.seg-usa td:not(.stage){ background: var(--amber-bg); }
   tr.seg-jobseeker td:not(.stage){ background: var(--red-bg); }
   tr.seg-genuine td:not(.stage){ background: var(--green-bg); }
   .sw{ display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:6px; }
@@ -108,13 +110,17 @@
         <td class="num" id="c-home">—</td><td class="pct" id="s-home">—</td>
       </tr>
       <tr class="seg-india">
-        <td class="stage" rowspan="2">2 · Geo split</td>
+        <td class="stage" rowspan="3">2 · Geo split</td>
         <td><span class="sw" style="background:var(--blue)"></span>India</td>
         <td class="num" id="c-india">—</td><td class="pct" id="s-india">—</td>
       </tr>
       <tr class="seg-outside">
         <td><span class="sw" style="background:var(--violet)"></span>Outside India</td>
         <td class="num" id="c-outside">—</td><td class="pct" id="s-outside">—</td>
+      </tr>
+      <tr class="seg-usa">
+        <td><span class="sw" style="background:var(--amber)"></span>USA <span style="color:var(--text-dim);font-weight:400">(within outside)</span></td>
+        <td class="num" id="c-usa">—</td><td class="pct" id="s-usa">—</td>
       </tr>
       <tr class="seg-india">
         <td class="stage" rowspan="2">3 · Started with Sarah<span class="stage-note">Tracking started 14 Jul 2026</span></td>
@@ -203,6 +209,7 @@ function computeDerived(raw){
   d.outsideSessions = outside;
   d.indiaPct = home>0 ? (india/home*100) : NaN;
   d.outsidePct = home>0 ? (outside/home*100) : NaN;
+  d.usaPct = home>0 ? ((raw.usaSessions||0)/home*100) : NaN;
   d.ctrIndia = india>0 ? (sarahIndia/india*100) : NaN;
   d.ctrOutside = outside>0 ? (sarahOutside/outside*100) : NaN;
   d.totalTried = totalTried;
@@ -229,6 +236,8 @@ function applyData(raw){
   document.getElementById('s-india').textContent = fmtPct(d.indiaPct);
   document.getElementById('c-outside').textContent = fmtNum(d.outsideSessions);
   document.getElementById('s-outside').textContent = fmtPct(d.outsidePct);
+  document.getElementById('c-usa').textContent = fmtNum(raw.usaSessions);
+  document.getElementById('s-usa').textContent = fmtPct(d.usaPct,1);
   document.getElementById('c-sarah-india').textContent = fmtNum(raw.sarahIndiaClicks);
   document.getElementById('s-sarah-india').textContent = fmtPct(d.ctrIndia,1)+(isFinite(d.ctrIndia)?' CTR':'');
   document.getElementById('c-sarah-outside').textContent = fmtNum(raw.sarahOutsideClicks);
