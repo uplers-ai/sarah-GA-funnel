@@ -146,26 +146,6 @@
       </tr>
     </tbody>
   </table>
-  <div class="table-note">Rows 1–4 update automatically from GA4 each day. Share for rows 2, 3, 5 is % within that stage; row 4 share is % of homepage traffic (overall conversion). Row 5 (lead quality) is entered manually. Note: the "Start with Sarah" CTA event was added on 14 Jul 2026, so click counts (rows 3–4) only reflect activity from that date onward, even though the traffic window starts at launch.</div>
-
-  <h2 class="section">Analysis</h2>
-  <table>
-    <thead>
-      <tr>
-        <th style="width:33%; background:var(--green-bg)">What's good</th>
-        <th style="width:33%; background:var(--red-bg)">What's bad</th>
-        <th style="background:var(--blue-bg)">What's next</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="readout-cell"><ul class="readout" id="out-good"></ul></td>
-        <td class="readout-cell"><ul class="readout" id="out-bad"></ul></td>
-        <td class="readout-cell"><ul class="readout" id="out-next"></ul></td>
-      </tr>
-    </tbody>
-  </table>
-
   <h2 class="section">Other areas to track (not wired yet)</h2>
   <table>
     <thead><tr><th>Layer</th><th>Question</th><th>Metrics</th></tr></thead>
@@ -248,10 +228,6 @@ function applyData(raw){
   document.getElementById('s-jobseekers').textContent = fmtPct(d.jobSeekerPct);
   document.getElementById('c-genuine').textContent = fmtNum(d.genuineCount);
   document.getElementById('s-genuine').textContent = fmtPct(d.genuinePct);
-
-  renderList('out-good', raw.goodText);
-  renderList('out-bad', raw.badText);
-  renderList('out-next', raw.nextText);
 
   if(raw.windowLabel){ document.getElementById('windowPill').textContent = 'reporting window · ' + raw.windowLabel; }
 
