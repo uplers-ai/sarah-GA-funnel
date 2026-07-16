@@ -16,6 +16,7 @@ Env vars:
 import os
 import json
 import datetime
+import urllib.request
 
 from google.analytics.data_v1beta import BetaAnalyticsDataClient
 from google.analytics.data_v1beta.types import (
@@ -30,8 +31,25 @@ from google.analytics.data_v1beta.types import (
 
 PROPERTY_ID = os.environ.get("GA4_PROPERTY_ID", "285344907")
 EVENT_NAME = "Start with Sarah - CTA Clicks"
+LEAD_API = os.environ.get(
+    "LEAD_QUALITY_API", "https://platform.uplers.com/api/public-intake/lead-quality"
+)
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(HERE, "data.json")
+
+
+def fetch_lead_quality():
+    """Pull job-seeker / genuine-buyer classification from the Sarah intake API."""
+    req = urllib.request.Request(LEAD_API, headers={"User-Agent": "sarah-dashboard/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        payload = json.loads(resp.read().decode("utf-8"))
+    d = payload.get("data", payload)
+    return {
+        "jobSeekerCount": int(d.get("candidate", 0)),         # candidate = job seeker / unqualified
+        "genuineBuyerCount": int(d.get("hiring_manager", 0)),  # hiring_manager = genuine buyer
+        "notIdentified": int(d.get("not_identified", 0)),
+        "leadTotalStarted": int(d.get("total_started", 0)),
+    }
 
 # ---- reporting window ------------------------------------------------------
 # Priority: GA4_START (a fixed launch date) > GA4_WINDOW ("mtd" or N days).
@@ -120,6 +138,21 @@ data = {
     "windowLabel": window_label,
     "updatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
 }
+
+# Lead quality from the Sarah intake API. If it's unreachable, keep the previous
+# run's values rather than zeroing the row out.
+try:
+    data.update(fetch_lead_quality())
+except Exception as e:
+    print("WARN: lead-quality API failed, keeping previous values:", e)
+    try:
+        with open(DATA_FILE) as f:
+            prev = json.load(f)
+        for k in ["jobSeekerCount", "genuineBuyerCount", "notIdentified", "leadTotalStarted"]:
+            if prev.get(k) is not None:
+                data[k] = prev[k]
+    except Exception:
+        pass
 
 with open(DATA_FILE, "w") as f:
     json.dump(data, f, indent=2)

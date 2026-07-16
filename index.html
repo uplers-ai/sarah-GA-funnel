@@ -136,7 +136,7 @@
         <td class="num" id="c-total">—</td><td class="pct" id="s-total">—</td>
       </tr>
       <tr class="seg-jobseeker">
-        <td class="stage" rowspan="2">5 · Lead quality</td>
+        <td class="stage" rowspan="2">5 · Lead quality<span class="stage-note">from Sarah intake · all conversations</span></td>
         <td><span class="sw" style="background:var(--red)"></span>Job seekers / unqualified</td>
         <td class="num" id="c-jobseekers">—</td><td class="pct" id="s-jobseekers">—</td>
       </tr>
@@ -164,7 +164,8 @@
   </table>
 
   <footer class="note">
-    GA4 funnel rows (1–4) refresh automatically every day. To change the lead-quality numbers or the analysis notes, edit <code>manual.json</code> in the repository (GitHub → <code>manual.json</code> → pencil icon → commit) — the daily job never overwrites it.
+    Everything on this page refreshes automatically every day — the traffic funnel (rows 1–4) from GA4,
+    and the lead-quality split (row 5) from the Sarah intake API. Nothing to update by hand.
   </footer>
 
 </div>
@@ -181,8 +182,9 @@ function computeDerived(raw){
   const sarahIndia = raw.sarahIndiaClicks || 0;
   const sarahOutside = raw.sarahOutsideClicks || 0;
   const totalTried = sarahIndia + sarahOutside;
-  const jobSeekers = raw.jobSeekerCount || 0;
-  const genuine = totalTried - jobSeekers;
+  const jobSeekers = raw.jobSeekerCount || 0;      // from Sarah intake API (candidate)
+  const genuine = raw.genuineBuyerCount || 0;      // from Sarah intake API (hiring_manager)
+  const leadBase = jobSeekers + genuine;           // classified conversations
 
   d.outsideSessions = outside;
   d.indiaPct = home>0 ? (india/home*100) : NaN;
@@ -193,8 +195,8 @@ function computeDerived(raw){
   d.totalTried = totalTried;
   d.totalShare = home>0 ? (totalTried/home*100) : NaN;
   d.genuineCount = genuine;
-  d.jobSeekerPct = totalTried>0 ? (jobSeekers/totalTried*100) : NaN;
-  d.genuinePct = totalTried>0 ? (genuine/totalTried*100) : NaN;
+  d.jobSeekerPct = leadBase>0 ? (jobSeekers/leadBase*100) : NaN;
+  d.genuinePct = leadBase>0 ? (genuine/leadBase*100) : NaN;
   return d;
 }
 
@@ -243,10 +245,9 @@ function applyData(raw){
 
 async function loadData(){
   const bust = '?t=' + Date.now();
-  let ga4 = {}, manual = {};
+  let ga4 = {};
   try{ const r = await fetch('data.json' + bust); if(r.ok) ga4 = await r.json(); }catch(e){}
-  try{ const r = await fetch('manual.json' + bust); if(r.ok) manual = await r.json(); }catch(e){}
-  applyData({...manual, ...ga4});
+  applyData(ga4);
 }
 
 loadData();

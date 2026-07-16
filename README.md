@@ -1,18 +1,18 @@
 # Sarah Funnel — Auto-updating dashboard
 
 A public dashboard for the **Sarah AI Hiring Agent** funnel on uplers.com, hosted on
-GitHub Pages. A GitHub Action refreshes the GA4 rows every morning using a Google
-**service account**, so it runs on its own — no computer needs to be on. The
-lead-quality numbers and analysis notes are edited by hand.
+GitHub Pages. A GitHub Action refreshes the whole dashboard every morning using a Google
+**service account** for GA4, so it runs on its own — no computer needs to be on. The
+lead-quality split (job seekers vs genuine buyers) is pulled automatically from the Sarah
+intake API in the same run. Nothing on the page is edited by hand.
 
 ## Files
 
 | File | What it is | Who updates it |
 |------|-----------|----------------|
-| `index.html` | The dashboard. Loads the two JSON files and renders the funnel. | Rarely (design only) |
-| `data.json` | GA4 numbers: homepage sessions, India sessions, Sarah clicks (India / outside). | **Automatic** — daily Action |
-| `manual.json` | Lead quality (job seekers) + the good / bad / next notes. | **You**, whenever you like |
-| `fetch_ga4.py` | Pulls the GA4 numbers and writes `data.json`. | — |
+| `index.html` | The dashboard. Loads `data.json` and renders the funnel. | Rarely (design only) |
+| `data.json` | GA4 traffic numbers **and** the lead-quality split (from the Sarah intake API). | **Automatic** — daily Action |
+| `fetch_ga4.py` | Pulls the GA4 numbers + the lead-quality API and writes `data.json`. | — |
 | `.github/workflows/update.yml` | Runs `fetch_ga4.py` daily and publishes to Pages. | — |
 | `requirements.txt` | Python dependency (`google-analytics-data`). | — |
 
@@ -66,19 +66,15 @@ that date through today ("since launch"). Change the date to move the start, or 
 `GA4_START` and set `GA4_WINDOW` to `"mtd"` (month-to-date) or a number of days (e.g.
 `"28"`) for a rolling window instead.
 
-## Updating the manual numbers
+## Lead quality (row 5)
 
-Open `manual.json` on GitHub, click the pencil ✏️, edit, commit:
+Pulled automatically from the Sarah intake API
+(`https://platform.uplers.com/api/public-intake/lead-quality`) on each run:
 
-```json
-{
-  "jobSeekerCount": 12,
-  "goodText": "one point per line",
-  "badText": "one point per line",
-  "nextText": "one point per line"
-}
-```
+- `candidate` → **Job seekers / unqualified**
+- `hiring_manager` → **Genuine buyers**
+- `not_identified` and `total_started` are also stored in `data.json` (not shown on the page yet).
 
-`jobSeekerCount` is how many of the total Sarah conversations were job seekers; the
-dashboard computes **genuine buyers** as `total clicks − job seekers` automatically.
-The daily Action never overwrites this file.
+Shares in row 5 are computed within the classified set (job seekers + genuine buyers).
+If the API is ever unreachable during a run, the job keeps the previous values rather than
+zeroing the row. Override the endpoint with the `LEAD_QUALITY_API` env var if it changes.
