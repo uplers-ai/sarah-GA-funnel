@@ -132,11 +132,16 @@
         <td class="num" id="c-sarah-outside">—</td><td class="pct" id="s-sarah-outside">—</td>
       </tr>
       <tr>
-        <td class="stage">4 · Total tried</td><td>All conversations</td>
+        <td class="stage">4 · Total tried</td><td>CTA clicks (GA4)</td>
         <td class="num" id="c-total">—</td><td class="pct" id="s-total">—</td>
       </tr>
+      <tr>
+        <td class="stage">5 · Conversations started<span class="stage-note">Sarah intake · all-time</span></td>
+        <td>All Sarah conversations</td>
+        <td class="num" id="c-started">—</td><td class="pct" id="s-started">—</td>
+      </tr>
       <tr class="seg-jobseeker">
-        <td class="stage" rowspan="2">5 · Lead quality<span class="stage-note">from Sarah intake · all conversations</span></td>
+        <td class="stage" rowspan="2">6 · Lead quality<span class="stage-note">of conversations started</span></td>
         <td><span class="sw" style="background:var(--red)"></span>Job seekers / unqualified</td>
         <td class="num" id="c-jobseekers">—</td><td class="pct" id="s-jobseekers">—</td>
       </tr>
@@ -224,6 +229,10 @@ function applyData(raw){
   document.getElementById('s-sarah-outside').textContent = fmtPct(d.ctrOutside,1)+(isFinite(d.ctrOutside)?' CTR':'');
   document.getElementById('c-total').textContent = fmtNum(d.totalTried);
   document.getElementById('s-total').textContent = fmtPct(d.totalShare,1);
+  const startedVal = raw.leadTotalStarted || 0;
+  const leadBaseVal = (raw.jobSeekerCount||0) + (raw.genuineBuyerCount||0);
+  document.getElementById('c-started').textContent = fmtNum(raw.leadTotalStarted);
+  document.getElementById('s-started').textContent = startedVal>0 ? fmtPct(leadBaseVal/startedVal*100,1)+' classified' : '—';
   document.getElementById('c-jobseekers').textContent = fmtNum(raw.jobSeekerCount);
   document.getElementById('s-jobseekers').textContent = fmtPct(d.jobSeekerPct);
   document.getElementById('c-genuine').textContent = fmtNum(d.genuineCount);
