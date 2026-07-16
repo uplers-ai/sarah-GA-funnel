@@ -2,7 +2,7 @@ name: Daily GA4 refresh
 
 on:
   schedule:
-    - cron: "0 4 * * *"   # 04:00 UTC = 09:30 IST, daily
+    - cron: "17 4 * * *"   # 04:17 UTC = 09:47 IST — off-the-hour so GitHub is less likely to delay/drop it
   workflow_dispatch:        # lets you run it on demand from the Actions tab
   push:
     branches: [ main ]      # also refresh + redeploy on any commit (e.g. editing manual.json)
