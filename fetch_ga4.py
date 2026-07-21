@@ -45,9 +45,9 @@ def fetch_lead_quality():
         payload = json.loads(resp.read().decode("utf-8"))
     d = payload.get("data", payload)
     return {
-        "jobSeekerCount": int(d.get("candidate", 0)),         # candidate = job seeker / unqualified
-        "genuineBuyerCount": int(d.get("hiring_manager", 0)),  # hiring_manager = genuine buyer
-        "notIdentified": int(d.get("not_identified", 0)),
+        # API now returns a single combined bucket for job seekers + unclassified
+        "jobSeekerCount": int(d.get("job_seeker_or_unclassified", 0)),
+        "genuineBuyerCount": int(d.get("genuine_buyer", 0)),
         "leadTotalStarted": int(d.get("total_started", 0)),
     }
 
@@ -148,7 +148,7 @@ except Exception as e:
     try:
         with open(DATA_FILE) as f:
             prev = json.load(f)
-        for k in ["jobSeekerCount", "genuineBuyerCount", "notIdentified", "leadTotalStarted"]:
+        for k in ["jobSeekerCount", "genuineBuyerCount", "leadTotalStarted"]:
             if prev.get(k) is not None:
                 data[k] = prev[k]
     except Exception:

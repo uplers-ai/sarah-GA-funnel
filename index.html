@@ -187,8 +187,8 @@ function computeDerived(raw){
   const sarahIndia = raw.sarahIndiaClicks || 0;
   const sarahOutside = raw.sarahOutsideClicks || 0;
   const totalTried = sarahIndia + sarahOutside;
-  const jobSeekers = raw.jobSeekerCount || 0;      // from Sarah intake API (candidate)
-  const genuine = raw.genuineBuyerCount || 0;      // from Sarah intake API (hiring_manager)
+  const jobSeekers = raw.jobSeekerCount || 0;      // from Sarah intake API (job_seeker_or_unclassified)
+  const genuine = raw.genuineBuyerCount || 0;      // from Sarah intake API (genuine_buyer)
   const leadBase = jobSeekers + genuine;           // classified conversations
 
   d.outsideSessions = outside;
